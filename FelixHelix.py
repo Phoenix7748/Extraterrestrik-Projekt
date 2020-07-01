@@ -58,20 +58,6 @@ mu_0 = const.mu_0  # 1/(eps_0*(c**2))  # Magnetische Feldkonstante in N/(A**2)
 
 # %% Klassen
 
-# """Klasse der Magnetfelder -  diese sind (zeitabhängige) Vektorfelder"""
-
-
-# class magnetic_field():
-#     pass
-
-
-# """Klasse der elektrischen Felder-diese sind (zeitabhängige) Vektorfelder"""
-
-
-# class electric_field():
-#     pass
-
-
 """Klasse der Teilchen. Diese haben Massen, Ladungen, Spins, Position
    (als kartesischen Ortsvektor) und Geschwindigkeit (auch als kart. Vektor)"""
 
@@ -181,7 +167,7 @@ class CartesianSpace():
     """Für jeden diskreten x-Werte lege ich eine Zeile in dieser Matrix an
        für jeden y-Wert eine Spalte und für jeden z-Werte eine "Reihe".
        die Elemente dieser Matrix sind Zellen aus x-,y- und z-Intervallen
-       die somit wieder den gesamten R^3 füllen.
+       die somit wieder den gesamten R^3 Abschnitt lückenlos füllen.
        Die zellen sind so angeorndet, dass wenn man sich nur in positive
        x-Richtung bewegt nur der erste Index steigt während der y- und der
        z-Index fixiert bleiben. Analoges für Bewegungen in andere Richtungen"""
@@ -191,7 +177,7 @@ class CartesianSpace():
         x_arr = np.arange(x_tripel[0], x_tripel[1], x_tripel[2])
         y_stride = y_tripel[2]
         y_arr = np.arange(y_tripel[0], y_tripel[1], y_tripel[2])
-        z_stride = x_tripel[2]
+        z_stride = z_tripel[2]
         z_arr = np.arange(z_tripel[0], z_tripel[1], z_tripel[2])
         cell_lol = []
         x_index = 0
@@ -220,13 +206,6 @@ class CartesianSpace():
         self.z_arr = z_arr
         self.z_stride = z_stride
 
-# Spacetime verbindet einen CartesianSpace mit einer Zeit, somit ließe sich
-# der selbe Raum für mehrere Teilchen nutzen, deren plots jeweils andere
-# Spacetimes nutzen
-
-
-class SpaceTime():
-    pass
 
 # %% Funktionen
 
@@ -369,21 +348,22 @@ def trajectory(particle, space):
     time_list = []
     in_space = check_index(indx, space)  # boolean
     count = 0
-    while in_space and count <= 10000:
-        print("count ist: ", count)  # inkrementiert immer um 1, auch gut
+    while in_space and count <= 100000:
+        print("count ist: ", count)  # inkrementiert immer um 1
         # print("Index ist: ", indx)  # geht immer brav nur einen weiter
-        cell_list.append(cell.copy())
+        # cell_list.append(cell.copy())
         position_list.append(particle.position.copy())
-        velocity_list.append(v.copy())
-        time_list.append(particle.time)
+        # velocity_list.append(v.copy())
+        # time_list.append(particle.time)
         lorentz_acc = (q/m)*(cell.elec_fld(particle.time)+np.cross(v, cell.mag_fld(particle.time)))
-        print("lorentz_acc: ", lorentz_acc)
+        # print("lorentz_acc: ", lorentz_acc)
         indx, dt = find_next_cell(particle, space, indx)
         # print("dt: ", dt)
         particle.move(dt)
-        print("particle.position: ", particle.position)
+        # print("particle.position: ", particle.position)
         particle.accelerate(lorentz_acc*dt)
-        print("particle.velocity: ", particle.velocity)
+        # print("particle.velocity: ", particle.velocity)
+        print("Betrag: ", (particle.velocity[0]**2+particle.velocity[1]**2+particle.velocity[2]**2)**0.5)
         count += 1
         in_space = check_index(indx, space)  # boolean
     return(cell_list, position_list, velocity_list, time_list)
@@ -405,13 +385,6 @@ def plot_mag_field():
 
 def plot_elec_field():
     pass
-
-
-# %% Daten generieren und einlesen
-
-"""Je nachdem wie die Felder und Teilchen implementiert werden, lohnt es
-   sich womöglich diese (wenn es sich um größere Datensätze handelt)
-   zu generieren, in Dateien zu speichern und dann wieder einzulesen"""
 
 
 # %% Main
@@ -449,7 +422,7 @@ def mag_field1(r, t):
 
 # konstantes Magnetfeld parallel zur z-Achse
 def mag_field2(r, t):
-    return np.array([0, 0, 0.01])
+    return np.array([0.000001, 0, 0])
 
 
 # konstantes Magnetfeld parallel zur y-Achse
@@ -457,9 +430,9 @@ def mag_field3(r, t):
     return np.array([0, 0.01, 0])
 
 
-x_tripel = (-5, 5, 0.1)
-y_tripel = (-5, 5, 0.1)
-z_tripel = (-5, 5, 0.1)
+x_tripel = (0, 0.1, 0.1)
+y_tripel = (-1200, 1200, 1)
+z_tripel = (-1200, 1200, 1)
 
 print("Ich beginne den Raum zu erstellen!")
 space1 = CartesianSpace(x_tripel, y_tripel, z_tripel, mag_field2, elec_field2)
@@ -474,24 +447,24 @@ print("Raum ist fertiggestellt!")
 
 # %% Hier erstelle ich die Partikel und setzte diese ein
 
-position1 = np.array([0, 1, 0])
-velocity1 = np.array([0, 0, 1])
-time1 = 0
+# position1 = np.array([0, 1, 0])
+velocity1 = np.array([0, 100000000, 0])
+# time1 = 0
 position2 = np.array([0, 0, 0])
-velocity2 = np.array([0, -10, 1000000])
+# velocity2 = np.array([0, -1000, 0])
 time2 = 0
-position3 = np.array([0, 0, 10])
-velocity3 = np.array([0, 10000, 1000])
-time3 = 0
+# position3 = np.array([0, 0, 10])
+# velocity3 = np.array([0, 10000, 1000])
+# time3 = 0
 
 
-electron1 = Electron(position1, velocity1, time1)
-electron2 = Electron(position2, velocity2, time2)
-electron3 = Electron(position3, velocity3, time3)
-proton1 = Proton(position1, velocity1, time1)
-proton2 = Proton(position2, velocity2, time2)
-neutron1 = Neutron(position1, velocity1, time1)
-neutron2 = Neutron(position2, velocity2, time2)
+# electron1 = Electron(position1, velocity1, time1)
+electron2 = Electron(position2, velocity1, time2)
+# electron3 = Electron(position3, velocity3, time3)
+# proton1 = Proton(position1, velocity1, time1)
+# proton2 = Proton(position2, velocity2, time2)
+# neutron1 = Neutron(position1, velocity1, time1)
+# neutron2 = Neutron(position2, velocity2, time2)
 
 print("Ich fange an die Trajektorien zu bestimmen!")
 tupel_e = trajectory(electron2, space1)
@@ -527,7 +500,7 @@ ax.set_title("Helix-Plot")
 ax.view_init(55, 30)
 
 plt.show()
-fig.savefig("Helixplot")
+fig.savefig("Helixplot_kleingrid")
 
 # %% Testing
 
