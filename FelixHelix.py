@@ -130,6 +130,16 @@ class Neutron(Particle):
         self.time = time
 
 
+"""Klasse der Zellen, die für die Bestimmung der Teilchentrajektorien noch
+   nicht benötigt wurden. """
+
+
+class EmptyCell():
+
+    def __init__(self):
+        pass
+
+
 """Klasse der Zellen. Bei denen handelt es sich um Objekte die als Attribute
    einen Mittelpunkt, 3 Intervalle und 2 Felder haben"""
 
@@ -199,11 +209,8 @@ class CartesianSpace():
             x_index += 1
         # print(cell_lol)
         self.matrix = np.array(cell_lol)
-        self.x_arr = x_arr
         self.x_stride = x_stride
-        self.y_arr = y_arr
         self.y_stride = y_stride
-        self.z_arr = z_arr
         self.z_stride = z_stride
 
 
@@ -348,7 +355,7 @@ def trajectory(particle, space):
     time_list = []
     in_space = check_index(indx, space)  # boolean
     count = 0
-    while in_space and count <= 100000:
+    while in_space and count <= 1000:
         print("count ist: ", count)  # inkrementiert immer um 1
         # print("Index ist: ", indx)  # geht immer brav nur einen weiter
         # cell_list.append(cell.copy())
@@ -431,8 +438,8 @@ def mag_field3(r, t):
 
 
 x_tripel = (0, 0.1, 0.1)
-y_tripel = (-1200, 1200, 1)
-z_tripel = (-1200, 1200, 1)
+y_tripel = (-1200, 1200, 2)
+z_tripel = (-1200, 1200, 2)
 
 print("Ich beginne den Raum zu erstellen!")
 space1 = CartesianSpace(x_tripel, y_tripel, z_tripel, mag_field2, elec_field2)
@@ -482,7 +489,7 @@ positions_e = np.array(tupel_e[1]).T
 # print("\nZellen:\n", tupel_n[0])
 # print("\nPositionen:\n", tupel_e[1])
 # print("\nGeschwindigkeiten:\n", tupel_e[2])
-print("\nZeiten\n", tupel_e[3][-1])
+# print("\nZeiten\n", tupel_e[3][-1])
 # %% Plotten
 fig = plt.figure(figsize=(30, 30))
 ax = fig.gca(projection='3d')
